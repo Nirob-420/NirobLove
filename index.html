@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scary Audio and Image</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+        }
+        #scaryImage {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<audio id="audio1" src="ratsasan.mp3"></audio>
+<audio id="audio2" src="scary.mp3"></audio>
+<img id="scaryImage" src="scr.jpg" alt="Scary Image">
+
+<script>
+    function playAudioAndShowImage() {
+        let audio1 = document.getElementById('audio1');
+        let audio2 = document.getElementById('audio2');
+        let img = document.getElementById('scaryImage');
+
+        audio1.play();
+        setTimeout(() => {
+            audio2.play();
+        }, 5000); // 5 seconds later
+
+        setTimeout(() => {
+            img.style.display = "block";
+        }, 6000); // 6 seconds later
+    }
+
+    // Call the function when the page loads
+    window.onload = playAudioAndShowImage;
+</script>
+
+</body>
+</html>
