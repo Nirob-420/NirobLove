@@ -1,52 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scary Audio and Image</title>
+    <title>Spooky Mystery Box</title>
     <style>
         body {
             margin: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 0;
             background-color: black;
-        }
-        #scaryImage {
-            display: none;
-            width: 100vw;
+            color: white;
             height: 100vh;
-            object-fit: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            transition: background-color 0.01s; /* Added for instant black screen */
+        }
+        
+        #ghost {
+            display: none;
+            width: 700px;
+            height:100%;
+            animation: shake 0.5s infinite;
+        }
+
+        #message {
+            position: absolute;
+            bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            animation-delay: 5s;
+            color: red;
+            text-align: center;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
+    <div id="blackScreen"></div>
+    <img id="ghost" src="scr.jpg" alt="Scary Ghost">
+    <audio id="screamSound" src="scary.mp3" preload="auto"></audio>
+    <div id="message">"The darkness you fear... has been watching you all along."</div>
+    <center>click the screen </center>
 
-<audio id="audio1" src="ratsasan.mp3"></audio>
-<audio id="audio2" src="scary.mp3"></audio>
-<img id="scaryImage" src="scr.jpg" alt="Scary Image">
+    <script>
+        // Load audio first to prevent delay
+        const screamSound = document.getElementById('screamSound');
+        
+        // Set timeout to 3 seconds (3000ms)
+        setTimeout(function(){
+            document.body.style.backgroundColor = "black";
+            document.getElementById('blackScreen').style.display = 'none';
+            
+            // Show ghost and play sound simultaneously
+            requestAnimationFrame(() => {
+                document.getElementById('ghost').style.display = 'block';
+                screamSound.currentTime = 0; // Reset audio to start
+                screamSound.play().catch(error => {
+                    console.log('Audio play failed:', error);
+                });
+            });
+        }, 55555555); // Fixed to 3 seconds
 
-<script>
-    function playAudioAndShowImage() {
-        let audio1 = document.getElementById('audio1');
-        let audio2 = document.getElementById('audio2');
-        let img = document.getElementById('scaryImage');
-
-        audio1.play();
-        setTimeout(() => {
-            audio2.play();
-        }, 5000); // 5 seconds later
-
-        setTimeout(() => {
-            img.style.display = "block";
-        }, 6000); // 6 seconds later
-    }
-
-    // Call the function when the page loads
-    window.onload = playAudioAndShowImage;
-</script>
-
+        // Optional click event (fixed timing)
+        document.body.addEventListener('click', function() {
+            requestAnimationFrame(() => {
+                document.getElementById('ghost').style.display = 'block';
+                screamSound.currentTime = 0;
+                screamSound.play();
+            });
+        }, {once: true}); // Only trigger once
+    </script>
 </body>
 </html>
