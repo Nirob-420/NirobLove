@@ -1,143 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>System Diagnostic Tool</title>
+    <title>DO NOT CLOSE</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #000;
-            color: #fff;
+            background-color: black;
+            color: white;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Black', sans-serif;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
             cursor: none;
         }
         
         #ghost {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 100vw;
-            max-height: 100vh;
-            animation: glitch 0.1s infinite, zoom 0.5s forwards;
+            width: 150%;
+            height: 150%;
+            object-fit: cover;
+            animation: shake 0.1s infinite, glow 2s infinite;
+            filter: hue-rotate(90deg);
+        }
+
+        #message {
+            position: absolute;
+            bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards, glitch 1s infinite;
+            color: #ff0000;
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: hue-rotate(90deg) brightness(1.5); }
+            50% { filter: hue-rotate(120deg) brightness(2); }
         }
 
         @keyframes glitch {
-            0% { clip-path: inset(2% 0 98% 0); }
-            25% { clip-path: inset(5% 0 85% 0); }
-            50% { clip-path: inset(80% 0 5% 0); }
-            75% { clip-path: inset(10% 0 60% 0); }
-            100% { clip-path: inset(0); }
+            0% { text-shadow: 3px 0 cyan, -3px 0 red; }
+            25% { text-shadow: -3px 0 cyan, 3px 0 red; }
+            50% { text-shadow: 2px 0 cyan, -2px 0 red; }
+            75% { text-shadow: -2px 0 cyan, 2px 0 red; }
+            100% { text-shadow: 3px 0 cyan, -3px 0 red; }
         }
 
-        @keyframes zoom {
-            from { transform: translate(-50%, -50%) scale(0); }
-            to { transform: translate(-50%, -50%) scale(1.5); }
-        }
-
-        #warning {
+        .blood {
             position: fixed;
-            top: 0;
-            background: #8a0303;
-            color: white;
-            padding: 20px;
             width: 100%;
-            text-align: center;
-            z-index: 9999;
+            height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+            pointer-events: none;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Mandatory Warning -->
-    <div id="warning">
-        ⚠️  click this button ⚠️
-        <button onclick="window.close()" style="background:black;color:white;border:none;padding:5px">
-            CLICK 
-        </button>
-    </div>
-
-    <img id="ghost" src="scr.jpg" alt="Scary Ghost">
+    <div class="blood"></div>
+    <img id="ghost" src="scr.jpg" alt="SCREAMING FACE">
     <audio id="screamSound" src="scary.mp3" preload="auto"></audio>
+    <audio id="heartbeat" src="heartbeat.mp3" loop></audio>
+    <div id="message">"click this screen"</div>
+    <center></center>
 
     <script>
-        // Safety Protocol
-        let scareCount = 0;
-        const MAX_SCARES = 3;
-        let safetyTimeout = setTimeout(() => window.close(), 120000);
-
-        // Psychological Pressure System
-        const triggers = {
-            mouseMove: true,
-            audioPlay: true,
-            timeDelay: true,
-            clickAnywhere: true,
-            inactivity: true
-        };
-
-        // Initialize
-        document.body.requestFullscreen().catch(console.log);
-        initScareSystem();
-
-        function initScareSystem() {
-            // Randomized Timing (3-7 seconds)
-            setTimeout(randomScare, Math.random() * 4000 + 3000);
+        let triggered = false;
+        const screamSound = document.getElementById('screamSound');
+        const heartbeat = document.getElementById('heartbeat');
+        
+        // Start heartbeat immediately
+        heartbeat.play().catch(() => {});
+        
+        function triggerHorror() {
+            if(triggered) return;
+            triggered = true;
             
-            // Multiple Triggers
-            if(triggers.mouseMove) document.addEventListener('mousemove', delayedScare);
-            if(triggers.clickAnywhere) document.addEventListener('click', instantScare);
-            if(triggers.inactivity) setupInactivityTrigger();
+            document.body.style.backgroundColor = "red";
+            document.body.classList.add('no-cursor');
+            document.getElementById('ghost').style.display = 'block';
+            document.querySelector('.blood').style.display = 'block';
             
-            // Fake System Messages
-            setTimeout(() => {
-                alert('Critical System Error: Memory Corruption Detected');
-            }, 2000);
+            screamSound.play();
+            heartbeat.pause();
+            
+            // Violent screen shaking
+            document.body.style.animation = 'shake 0.1s infinite';
+            
+            // Prevent closing
+            window.onbeforeunload = function() {
+                return "DON'T LEAVE ME";
+            };
+            
+            // Disable right click
+            document.addEventListener('contextmenu', e => e.preventDefault());
         }
 
-        function randomScare() {
-            if(scareCount++ >= MAX_SCARES) return;
-            triggerScare();
-            setTimeout(randomScare, Math.random() * 10000 + 5000);
-        }
+        // Random trigger times
+        setTimeout(triggerHorror, Math.random() * 5000 + 50000);
+        
+        // Trigger on any user interaction
+        ['click', 'mousemove', 'keydown', 'scroll'].forEach(event => {
+            window.addEventListener(event, triggerHorror, {once: true});
+        });
 
-        function triggerScare() {
-            // Visual Distortion
-            document.body.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
-            
-            // Audio/Visual Sync
-            const ghost = document.getElementById('ghost');
-            const sound = document.getElementById('screamSound');
-            
-            ghost.style.display = 'block';
-            sound.currentTime = 0;
-            sound.play().catch(console.log);
-            
-            // Physical Response
-            navigator.vibrate?.(500);
-            
-            // Auto-reset
-            setTimeout(() => ghost.style.display = 'none', 1500);
-        }
-
-        function delayedScare() {
-            setTimeout(triggerScare, 1000);
-            document.removeEventListener('mousemove', delayedScare);
-        }
-
-        function instantScare() {
-            triggerScare();
-            document.body.style.cursor = 'none';
-        }
-
-        function setupInactivityTrigger() {
-            let timeout = setTimeout(triggerScare, 15000);
-            document.addEventListener('mousemove', () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(triggerScare, 15000);
-            });
-        }
+        // Fullscreen trap
+        document.documentElement.requestFullscreen().catch(() => {});
     </script>
 </body>
 </html>
